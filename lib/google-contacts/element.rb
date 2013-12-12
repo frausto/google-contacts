@@ -1,7 +1,7 @@
 module GContacts
   class Element
     attr_accessor :title, :content, :data, :category, :etag, :group_id
-    attr_reader :id, :edit_uri, :modifier_flag, :updated, :batch
+    attr_reader :id, :edit_uri, :modifier_flag, :updated, :batch, :photo_uri
 
     ##
     # Creates a new element by parsing the returned entry from Google
@@ -57,12 +57,10 @@ module GContacts
 
       # Need to know where to send the update request
       if entry["link"].is_a?(Array)
-        entry["link"].each do |link|
-          if link["@rel"] == "edit"
-            @edit_uri = URI(link["@href"])
-            break
-          end
-        end
+        link = entry['link'].find { |e| e['@rel'] == 'edit' }
+        @edit_uri = URI(link["@href"]) if link
+        link = entry['link'].find { |e| e['@rel'] == 'http://schemas.google.com/contacts/2008/rel#photo' }
+        @photo_uri = URI(link["@href"]) if link
       end
     end
 
