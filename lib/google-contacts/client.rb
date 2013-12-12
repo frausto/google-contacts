@@ -105,6 +105,24 @@ module GContacts
       end
     end
 
+
+    # Get a single contact photo
+    # @param [GContacts::Element] contact to get photo
+    # @param [Hash] args
+    # @option args [Hash, Optional] :params Query string arguments when sending the API request
+    # @option args [Hash, Optional] :headers Any additional headers to pass with the API request
+    #
+    # @raise [Net::HTTPError]
+    # @raise [GContacts::InvalidRequest]
+    #
+    # @return [String] image in binary format
+    def get_photo(contact, args={})
+      uri = contact.photo_uri
+      fail InvalidRequest, "Contact (#{contact.id} has no photo." unless uri
+
+      http_request(:get, URI(uri), args)
+    end
+
     ##
     # Immediately creates the element on Google
     #
